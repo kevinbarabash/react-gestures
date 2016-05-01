@@ -5,7 +5,7 @@ module.exports = {
     devtool: '#eval-source-map',
     entry: {
         app: './src/index',
-        deps: ['react', 'react-dom', 'react-native-web']
+        deps: ['react', 'react-dom', 'react-native-web', 'pepjs']
     },
     output: {
         path: path.join(__dirname, 'build'),
