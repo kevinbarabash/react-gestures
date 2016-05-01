@@ -10,6 +10,7 @@
   "author": "Kevin Barabash <kevinb@khanacademy.org>",
   "license": "MIT",
   "dependencies": {
+    "babel-polyfill": "^6.7.4",
     "pepjs": "^0.4.1",
     "react": "^0.14",
     "react-dom": "^0.14"

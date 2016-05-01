@@ -1,55 +1,69 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { View, Text, StyleSheet } from 'react-native-web';
 
-class PointerView extends React.Component {
+import './pointer-events';
+
+class View extends React.Component {
+    static propTypes = {
+        onPointerDown: React.PropTypes.func,
+    };
 
     componentDidMount() {
         const domNode = ReactDOM.findDOMNode(this);
+        
+        this.listeners = {};
 
-        // Without this pointer events won't work because events will be handled
-        // by the browser's default touch action, usually scroll/pan.
-        domNode.setAttribute('touch-action', 'none');
-
-        domNode.addEventListener('pointerdown', (evt) => {
-            evt.preventDefault();
-            if (this.props.onPointerDown) {
+        if (this.props.onPointerDown) {
+            this.listeners['pointerdown'] = (evt) => {
+                evt.preventDefault();
                 this.props.onPointerDown(evt);
             }
-        });
-
-        domNode.addEventListener('pointerup', (evt) => {
-            if (this.props.onPointerUp) {
-                this.props.onPointerUp(evt);
-            }
-        });
-
-        domNode.addEventListener('pointerover', (evt) => {
-            if (this.props.onPointerEnter) {
-                this.props.onPointerEnter(evt);
-            }
-        });
-
-        domNode.addEventListener('pointerout', (evt) => {
-            if (this.props.onPointerLeave) {
-                this.props.onPointerLeave(evt);
-            }
-        });
-
-        domNode.addEventListener('pointermove', (evt) => {
-            if (this.props.onPointerMove) {
+            domNode.addEventListener('pointerdown', this.listeners['pointerdown']);
+        }
+        
+        if (this.props.onPointerMove) {
+            this.listeners['pointermove'] = (evt) => {
                 this.props.onPointerMove(evt);
             }
-        })
+            domNode.addEventListener('pointermove', this.listeners['pointermove']);
+        }
+        
+        if (this.props.onPointerUp) {
+            this.listeners['pointerup'] = (evt) => {
+                this.props.onPointerUp(evt);
+            }
+            domNode.addEventListener('pointerup', this.listeners['pointerup']);
+        }
+        
+        if (this.props.onPointerEnter) {
+            this.listeners['pointerenter'] = (evt) => {
+                this.props.onPointerEnter(evt);
+            }
+            domNode.addEventListener('pointerenter', this.listeners['pointerenter']);
+        }
+        
+        if (this.props.onPointerLeave) {
+            console.log('registering pointerleave');
+            this.listeners['pointerleave'] = (evt) => {
+                this.props.onPointerLeave(evt);
+            }
+            domNode.addEventListener('pointerleave', this.listeners['pointerleave']);
+        }
+    }
+
+    componentWillUnmount() {
+        const domNode = ReactDOM.findDOMNode(this);
+
+        for (const [name, listener] of Object.entries(this.listeners)) {
+            domNode.removeEventListener(name, listener);
+        }
     }
 
     render() {
-        const style = {
-            ...this.props.style,
-            display: 'inline-block'
-        };
+        console.log('render');
+        console.log(this.props);
 
-        return <div style={style}>
+        return <div style={this.props.style}>
             {this.props.children}
         </div>
     }
@@ -69,7 +83,6 @@ class Button extends React.Component {
     };
 
     handlePointerLeave = (evt) => {
-        evt.preventDefault();
         this.setState({ focused: false });
     };
 
@@ -103,36 +116,27 @@ class Button extends React.Component {
             width: 64,
             height: 64,
             backgroundColor: focused ? 'red' : 'lightgray',
-        };
-
-        // TODO: automaticlaly set pointerEvents none if there are no pointer event listeners
-        const colStyle = {
-            height: '100%',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            pointerEvents: 'none',
         };
 
         const textStyle = {
             fontFamily: 'sans-serif',
             fontSize: 48,
-            pointerEvents: 'none',  // otherwise the child text will steal the event
         };
-
-        return <PointerView
+        
+        return <View
             onPointerEnter={this.handlePointerEnter}
             onPointerLeave={this.handlePointerLeave}
             onPointerDown={this.handlePointerDown}
             onPointerUp={this.handlePointerUp}
             style={buttonStyle}
         >
-            <div style={colStyle}>
-                <span style={textStyle}>{this.props.label}</span>
-            </div>
+            <span style={textStyle}>{this.props.label}</span>
             {this.props.menu}
-        </PointerView>
+        </View>
     }
 }
 
@@ -157,14 +161,6 @@ class App extends React.Component {
         });
     };
 
-    handleMenuLeave = (evt) => {
-        console.log('menu leave');
-    };
-
-    handleMenuMove = (evt) => {
-        // console.log('menu move');
-    };
-
     render() {
         const colStyle = {
             height: '100%',
@@ -184,21 +180,19 @@ class App extends React.Component {
             bottom: 0,
         };
 
-        const menu = this.state.menu ? <PointerView style={menuStyle} onPointerMove={this.handleMenuMove} onPointerLeave={this.handleMenuLeave}>
+        const menu = this.state.menu ? <View style={menuStyle} onPointerLeave={this.hideMenu}>
             <Button label="A" onPointerUp={this.hideMenu}/>
             <Button label="B" onPointerUp={this.hideMenu}/>
             <Button label="C" onPointerUp={this.hideMenu} focused={true} />
-        </PointerView> : null;
+        </View> : null;
 
         return <div style={colStyle}>
-            <div style={rowStyle}>
-                <PointerView onPointerMove={this.handlePointerMove}>
-                    <Button label="1"/>
-                    <Button label="2"/>
-                    <Button label="3"/>
-                    <Button label="4" onPointerDown={this.showMenu} menu={menu}/>
-                </PointerView>
-            </div>
+            <View style={rowStyle} onPointerMove={this.handlePointerMove}>
+                <Button label="1"/>
+                <Button label="2"/>
+                <Button label="3"/>
+                <Button label="4" onPointerDown={this.showMenu} menu={menu}/>
+            </View>
         </div>;
     }
 }
