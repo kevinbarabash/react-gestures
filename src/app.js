@@ -24,13 +24,13 @@ class PointerView extends React.Component {
             }
         });
 
-        domNode.addEventListener('pointerenter', (evt) => {
+        domNode.addEventListener('pointerover', (evt) => {
             if (this.props.onPointerEnter) {
                 this.props.onPointerEnter(evt);
             }
         });
 
-        domNode.addEventListener('pointerleave', (evt) => {
+        domNode.addEventListener('pointerout', (evt) => {
             if (this.props.onPointerLeave) {
                 this.props.onPointerLeave(evt);
             }
@@ -69,6 +69,7 @@ class Button extends React.Component {
     };
 
     handlePointerLeave = (evt) => {
+        evt.preventDefault();
         this.setState({ focused: false });
     };
 
@@ -120,7 +121,6 @@ class Button extends React.Component {
             pointerEvents: 'none',  // otherwise the child text will steal the event
         };
 
-
         return <PointerView
             onPointerEnter={this.handlePointerEnter}
             onPointerLeave={this.handlePointerLeave}
@@ -131,7 +131,7 @@ class Button extends React.Component {
             <div style={colStyle}>
                 <span style={textStyle}>{this.props.label}</span>
             </div>
-            {this.props.menu && <div>{this.props.menu}</div>}
+            {this.props.menu}
         </PointerView>
     }
 }
@@ -157,6 +157,14 @@ class App extends React.Component {
         });
     };
 
+    handleMenuLeave = (evt) => {
+        console.log('menu leave');
+    };
+
+    handleMenuMove = (evt) => {
+        // console.log('menu move');
+    };
+
     render() {
         const colStyle = {
             height: '100%',
@@ -176,11 +184,11 @@ class App extends React.Component {
             bottom: 0,
         };
 
-        const menu = this.state.menu ? <div style={menuStyle}>
+        const menu = this.state.menu ? <PointerView style={menuStyle} onPointerMove={this.handleMenuMove} onPointerLeave={this.handleMenuLeave}>
             <Button label="A" onPointerUp={this.hideMenu}/>
             <Button label="B" onPointerUp={this.hideMenu}/>
-            <Button label="C" focused={true} onPointerUp={this.hideMenu}/>
-        </div> : null;
+            <Button label="C" onPointerUp={this.hideMenu} focused={true} />
+        </PointerView> : null;
 
         return <div style={colStyle}>
             <div style={rowStyle}>
