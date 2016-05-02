@@ -21,7 +21,7 @@ document.addEventListener('touchstart', (evt) => {
 
     for (const touch of evt.changedTouches) {
         const element = document.elementFromPoint(touch.pageX, touch.pageY);
-
+        
         const event = new CustomEvent('pointerdown', {
             pageX: touch.pageX,
             pageY: touch.pageY,
@@ -58,9 +58,17 @@ document.addEventListener('touchmove', (evt) => {
     for (const touch of evt.changedTouches) {
         const element = document.elementFromPoint(touch.pageX, touch.pageY);
 
+        if (!element) {
+            // This occurs when the pointer goes outside the bounds of the page.
+            // This usually only happense on desktop browsers.
+            return;
+        }
+        
         const event = new CustomEvent('pointermove', {
-            pageX: touch.pageX,
-            pageY: touch.pageY,
+            detail: {
+                pageX: touch.pageX,
+                pageY: touch.pageY,
+            },
             bubbles: true,
             cancelable: true,
         });
@@ -112,6 +120,12 @@ document.addEventListener('touchend', (evt) => {
     for (const touch of evt.changedTouches) {
         const element = document.elementFromPoint(touch.pageX, touch.pageY);
 
+        if (!element) {
+            // This occurs when the pointer goes outside the bounds of the page.
+            // This usually only happense on desktop browsers.
+            return;
+        }
+        
         const event = new CustomEvent('pointerup', {
             pageX: touch.pageX,
             pageY: touch.pageY,
