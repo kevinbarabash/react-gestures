@@ -17,16 +17,21 @@ ClientRect.prototype.contains = function(touch) {
 };
 
 document.addEventListener('touchstart', (evt) => {
+    // TODO: don't call preventDefault all of the time
     evt.preventDefault();
 
     for (const touch of evt.changedTouches) {
         const element = document.elementFromPoint(touch.pageX, touch.pageY);
-        
-        const event = new CustomEvent('pointerdown', {
-            pageX: touch.pageX,
-            pageY: touch.pageY,
+
+        const event = new Event('pointerdown', {
             bubbles: true,
             cancelable: true,
+        });
+
+        Object.assign(event, {
+            pointerId: touch.identifier,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
         });
 
         element.dispatchEvent(event);
@@ -36,14 +41,18 @@ document.addEventListener('touchstart', (evt) => {
             const bounds = element.getBoundingClientRect();
             if (bounds.contains(touch)) {
 
-                const event = new CustomEvent('pointerenter', {
-                    pageX: touch.pageX,
-                    pageY: touch.pageY,
-                    bubbles: false,
+                const event = new Event('pointerenter', {
                     // Don't bubble otherwise we'll get leave events from all
                     // of our children.
                     // TODO: figure out what the spec does by checking IE/Edge
+                    bubbles: false,
                     cancelable: true,
+                });
+
+                Object.assign(event, {
+                    pointerId: touch.identifier,
+                    pageX: touch.pageX,
+                    pageY: touch.pageY,
                 });
 
                 element.dispatchEvent(event);
@@ -63,14 +72,16 @@ document.addEventListener('touchmove', (evt) => {
             // This usually only happense on desktop browsers.
             return;
         }
-        
-        const event = new CustomEvent('pointermove', {
-            detail: {
-                pageX: touch.pageX,
-                pageY: touch.pageY,
-            },
+
+         const event = new Event('pointermove', {
             bubbles: true,
             cancelable: true,
+        });
+
+        Object.assign(event, {
+            pointerId: touch.identifier,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
         });
 
         element.dispatchEvent(event);
@@ -84,26 +95,34 @@ document.addEventListener('touchmove', (evt) => {
             const focused = bounds.contains(touch);
 
             if (state.focused && !focused) {
-                const event = new CustomEvent('pointerleave', {
-                    pageX: touch.pageX,
-                    pageY: touch.pageY,
-                    bubbles: false,
+                const event = new Event('pointerleave', {
                     // Don't bubble otherwise we'll get leave events from all
                     // of our children.
                     // TODO: figure out what the spec does by checking IE/Edge
+                    bubbles: false,
                     cancelable: true,
+                });
+
+                Object.assign(event, {
+                    pointerId: touch.identifier,
+                    pageX: touch.pageX,
+                    pageY: touch.pageY,
                 });
 
                 element.dispatchEvent(event);
             } else if (!state.focused && focused) {
-                const event = new CustomEvent('pointerenter', {
-                    pageX: touch.pageX,
-                    pageY: touch.pageY,
-                    bubbles: false,
+                const event = new Event('pointerenter', {
                     // Don't bubble otherwise we'll get leave events from all
                     // of our children.
                     // TODO: figure out what the spec does by checking IE/Edge
+                    bubbles: false,
                     cancelable: true,
+                });
+
+                Object.assign(event, {
+                    pointerId: touch.identifier,
+                    pageX: touch.pageX,
+                    pageY: touch.pageY,
                 });
 
                 element.dispatchEvent(event);
@@ -125,12 +144,16 @@ document.addEventListener('touchend', (evt) => {
             // This usually only happense on desktop browsers.
             return;
         }
-        
-        const event = new CustomEvent('pointerup', {
-            pageX: touch.pageX,
-            pageY: touch.pageY,
+
+        const event = new Event('pointerup', {
             bubbles: true,
             cancelable: true,
+        });
+
+        Object.assign(event, {
+            pointerId: touch.identifier,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
         });
 
         element.dispatchEvent(event);
@@ -140,14 +163,18 @@ document.addEventListener('touchend', (evt) => {
             const bounds = element.getBoundingClientRect();
             if (bounds.contains(touch)) {
 
-                const event = new CustomEvent('pointerleave', {
-                    pageX: touch.pageX,
-                    pageY: touch.pageY,
-                    bubbles: false,
+                const event = new Event('pointerleave', {
                     // Don't bubble otherwise we'll get leave events from all
                     // of our children.
                     // TODO: figure out what the spec does by checking IE/Edge
+                    bubbles: false,
                     cancelable: true,
+                });
+
+                Object.assign(event, {
+                    pointerId: touch.identifier,
+                    pageX: touch.pageX,
+                    pageY: touch.pageY,
                 });
 
                 element.dispatchEvent(event);
@@ -164,11 +191,15 @@ document.addEventListener('touchcancel', (evt) => {
     for (const touch of evt.changedTouches) {
         const element = document.elementFromPoint(touch.pageX, touch.pageY);
 
-        const event = new CustomEvent('pointerup', {
-            pageX: touch.pageX,
-            pageY: touch.pageY,
+        const event = new Event('pointerup', {
             bubbles: true,
             cancelable: true,
+        });
+
+        Object.assign(event, {
+            pointerId: touch.identifier,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
         });
 
         element.dispatchEvent(event);
@@ -178,14 +209,18 @@ document.addEventListener('touchcancel', (evt) => {
             const bounds = element.getBoundingClientRect();
             if (bounds.contains(touch)) {
 
-                const event = new CustomEvent('pointerleave', {
-                    pageX: touch.pageX,
-                    pageY: touch.pageY,
-                    bubbles: false,
+                const event = new Event('pointerleave', {
                     // Don't bubble otherwise we'll get leave events from all
                     // of our children.
                     // TODO: figure out what the spec does by checking IE/Edge
+                    bubbles: false,
                     cancelable: true,
+                });
+
+                Object.assign(event, {
+                    pointerId: touch.identifier,
+                    pageX: touch.pageX,
+                    pageY: touch.pageY,
                 });
 
                 element.dispatchEvent(event);

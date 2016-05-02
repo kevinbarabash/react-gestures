@@ -22,30 +22,30 @@ class Keypad extends React.Component {
         if (lastX == null) {
             // TODO: create a synthetic event with pageX directly on the event
             // or... use mouse events in stead of custom DOM events
-            this.setState({ lastX: evt.detail.pageX });
+            this.setState({ lastX: evt.pageX });
         } else {
-            const dx = evt.detail.pageX - lastX;
-            
+            const dx = evt.pageX - lastX;
+
             let swiping = this.state.swiping;
-            
+
             // start swiping if the velocity if fast enough and the menu isn't showing
             // TODO: only allow swiping during the first 50 ms of the event stream
             if (Math.abs(dx) > 20 && !menu && !swiping) {
                 swiping = true;
             }
-            
-            this.setState({ 
+
+            this.setState({
                 swiping: swiping,
-                lastX: evt.detail.pageX,
+                lastX: evt.pageX,
                 translateX: swiping ? translateX + dx : 0,
             });
         }
     };
-    
+
     handlePointerUp = (evt) => {
         if (this.state.swiping) {
-            this.setState({ 
-                swiping: false, 
+            this.setState({
+                swiping: false,
                 lastX: null,
                 translateX: 0,
             });
@@ -59,10 +59,10 @@ class Keypad extends React.Component {
             position: 'absolute',
             bottom: 0,
         };
-        
+
         this.setState({
             menu: <View
-                onPointerLeave={this.hideMenu} 
+                onPointerLeave={this.hideMenu}
                 style={menuStyle}
             >
                 <Button label="A" onPointerUp={this.hideMenu}/>
@@ -80,7 +80,7 @@ class Keypad extends React.Component {
 
     render() {
         const { swiping, menu, translateX } = this.state;
-        
+
         const colStyle = {
             height: '100%',
             display: 'flex',
@@ -95,9 +95,12 @@ class Keypad extends React.Component {
             transform: `translate(${translateX}px, 0px)`,
         };
 
+        // TODO: instead of having to disable all buttons, there should be a solo mode
+        // where a component says to the system that it wants to be the only component
+        // receiving events.
         return <View style={colStyle}>
             <View
-                onPointerMove={this.handlePointerMove} 
+                onPointerMove={this.handlePointerMove}
                 onPointerUp={this.handlePointerUp}
                 style={rowStyle}
             >

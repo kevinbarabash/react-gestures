@@ -10,7 +10,7 @@ class View extends React.Component {
 
     componentDidMount() {
         const domNode = ReactDOM.findDOMNode(this);
-        
+
         this.listeners = {};
 
         if (this.props.onPointerDown) {
@@ -20,22 +20,22 @@ class View extends React.Component {
             }
             domNode.addEventListener('pointerdown', this.listeners['pointerdown']);
         }
-        
+
         if (this.props.onPointerMove) {
             this.listeners['pointermove'] = (evt) => this.props.onPointerMove(evt);
             domNode.addEventListener('pointermove', this.listeners['pointermove']);
         }
-        
+
         if (this.props.onPointerUp) {
             this.listeners['pointerup'] = (evt) => this.props.onPointerUp(evt);
             domNode.addEventListener('pointerup', this.listeners['pointerup']);
         }
-        
+
         if (this.props.onPointerEnter) {
             this.listeners['pointerenter'] = (evt) => this.props.onPointerEnter(evt);
             domNode.addEventListener('pointerenter', this.listeners['pointerenter']);
         }
-        
+
         if (this.props.onPointerLeave) {
             this.listeners['pointerleave'] = (evt) => this.props.onPointerLeave(evt);
             domNode.addEventListener('pointerleave', this.listeners['pointerleave']);
