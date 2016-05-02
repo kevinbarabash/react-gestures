@@ -16,6 +16,9 @@ ClientRect.prototype.contains = function(touch) {
         touch.pageY <= this.bottom;
 };
 
+// TODO: submit a pull request to core-js
+TouchList.prototype[Symbol.iterator] = [][Symbol.iterator];
+
 document.addEventListener('touchstart', (evt) => {
     // TODO: don't call preventDefault all of the time
     evt.preventDefault();
@@ -73,7 +76,7 @@ document.addEventListener('touchmove', (evt) => {
             return;
         }
 
-         const event = new Event('pointermove', {
+        const event = new Event('pointermove', {
             bubbles: true,
             cancelable: true,
         });
